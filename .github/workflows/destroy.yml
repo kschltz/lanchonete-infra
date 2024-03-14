@@ -1,9 +1,6 @@
 name: "Apply Stack after PR is Merged"
 
-on:
-  push:
-    branches:
-      - main
+on: [workflow_dispatch]
 
 permissions:
   contents: read
@@ -39,6 +36,6 @@ jobs:
         with:
           cdktfVersion: 0.20.4
           terraformVersion: 1.7.4
-          mode: auto-approve-apply
+          mode: auto-approve-destroy
           stackName: lanchonete-infra
           githubToken: ${{ secrets.GITHUB_TOKEN }}

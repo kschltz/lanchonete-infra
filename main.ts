@@ -1,5 +1,5 @@
 import {Construct} from "constructs";
-import {App, TerraformStack} from "cdktf";
+import {App, TerraformStack, TerraformVariable} from "cdktf";
 import {AwsProvider, AwsProviderDefaultTags} from "@cdktf/provider-aws/lib/provider";
 import {SecurityGroup} from "@cdktf/provider-aws/lib/security-group";
 import {Vpc} from "@cdktf/provider-aws/lib/vpc";
@@ -12,6 +12,13 @@ import {EcrRepository} from "@cdktf/provider-aws/lib/ecr-repository";
 class LanchoneteStack extends TerraformStack {
     constructor(scope: Construct, id: string) {
         super(scope, id);
+        //const AWS_PROFILE = new TerraformVariable(this, "AWS_PROFILE", {type: "string", sensitive: true});
+        //const AWS_REGION = new TerraformVariable(this, "AWS_REGION", {type: "string", sensitive: true});
+        const AWS_ACCESS_KEY_ID = new TerraformVariable(this, "AWS_ACCESS_KEY_ID", {type: "string", sensitive: true});
+        const AWS_SECRET_ACCESS_KEY = new TerraformVariable(this, "AWS_SECRET_ACCESS_KEY", {
+            type: "string",
+            sensitive: true
+        });
 
         const tags: AwsProviderDefaultTags[] = [
             {
@@ -22,11 +29,12 @@ class LanchoneteStack extends TerraformStack {
         ];
         const cfg = {
             defaultTags: tags,
-            accessKey: process.env.AWS_ACCESS_KEY_ID,
-            secretKey: process.env.AWS_SECRET_ACCESS_KEY,
-            region: process.env.AWS_DEFAULT_REGION,
+            accessKey: AWS_SECRET_ACCESS_KEY.stringValue,
+            secretKey: AWS_ACCESS_KEY_ID.stringValue,
+            region: "us-east-1"
         }
 
+        console.log(cfg);
 
         new AwsProvider(this, 'aws-provider', cfg);
 
@@ -80,7 +88,10 @@ class LanchoneteStack extends TerraformStack {
             policyArn: 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy'
         });
 
-        new EcrRepository(this, 'eksEcrRepository', {name: "lanchonete-api"});
+        new EcrRepository(this, 'eksEcrRepository', {
+            name: "lanchonete-api",
+            forceDelete: true
+        });
 
         new EksCluster(this, 'eksCluster', {
             name: 'my-eks-cluster',
