@@ -1,6 +1,6 @@
 import {Construct} from "constructs";
 import {App, TerraformStack, TerraformVariable} from "cdktf";
-import {AwsProvider, AwsProviderDefaultTags} from "@cdktf/provider-aws/lib/provider";
+import {AwsProvider, AwsProviderConfig, AwsProviderDefaultTags} from "@cdktf/provider-aws/lib/provider";
 import {SecurityGroup} from "@cdktf/provider-aws/lib/security-group";
 import {Vpc} from "@cdktf/provider-aws/lib/vpc";
 import {EksCluster} from "@cdktf/provider-aws/lib/eks-cluster";
@@ -12,8 +12,6 @@ import {EcrRepository} from "@cdktf/provider-aws/lib/ecr-repository";
 class LanchoneteStack extends TerraformStack {
     constructor(scope: Construct, id: string) {
         super(scope, id);
-        //const AWS_PROFILE = new TerraformVariable(this, "AWS_PROFILE", {type: "string", sensitive: true});
-        //const AWS_REGION = new TerraformVariable(this, "AWS_REGION", {type: "string", sensitive: true});
         const AWS_ACCESS_KEY_ID = new TerraformVariable(this, "AWS_ACCESS_KEY_ID", {type: "string", sensitive: true});
         const AWS_SECRET_ACCESS_KEY = new TerraformVariable(this, "AWS_SECRET_ACCESS_KEY", {
             type: "string",
@@ -27,20 +25,19 @@ class LanchoneteStack extends TerraformStack {
                 },
             },
         ];
-        const cfg = {
+        const cfg:AwsProviderConfig = {
             defaultTags: tags,
-            accessKey: AWS_SECRET_ACCESS_KEY.stringValue,
-            secretKey: AWS_ACCESS_KEY_ID.stringValue,
+            accessKey: AWS_ACCESS_KEY_ID.stringValue,
+            secretKey: AWS_SECRET_ACCESS_KEY.stringValue,
             region: "us-east-1"
         }
-
-        console.log(cfg);
-
         new AwsProvider(this, 'aws-provider', cfg);
 
         const vpc = new Vpc(this, 'eksVpc', {
             cidrBlock: '10.0.0.0/16'
         });
+
+        console.log(cfg);
 
         const subnet = new Subnet(this, 'eksSubnet', {
             vpcId: vpc.id,
