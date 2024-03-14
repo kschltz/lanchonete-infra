@@ -35,4 +35,6 @@ jobs:
           terraformVersion: 1.7.4
           mode: plan-only
           stackName: lanchonete-infra
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+
        
