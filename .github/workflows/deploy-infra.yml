@@ -31,21 +31,12 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
+          
       - name: Generate module and provider bindings
         run: npx cdktf-cli get
 
       - name: Run Terraform CDK
         uses: hashicorp/terraform-cdk-action@v3.0.7
-
-        with:
-          cdktfVersion: 0.20.4
-          terraformVersion: 1.7.4
-          mode: plan-only
-          stackName: lanchonete-infra
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Run Terraform CDK
-        uses: hashicorp/terraform-cdk-action@v3
         with:
           cdktfVersion: 0.20.4
           terraformVersion: 1.7.4
