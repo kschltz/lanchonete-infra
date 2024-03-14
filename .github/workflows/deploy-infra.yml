@@ -35,6 +35,16 @@ jobs:
         run: npx cdktf-cli get
 
       - name: Run Terraform CDK
+        uses: hashicorp/terraform-cdk-action@v3.0.7
+
+        with:
+          cdktfVersion: 0.20.4
+          terraformVersion: 1.7.4
+          mode: plan-only
+          stackName: lanchonete-infra
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run Terraform CDK
         uses: hashicorp/terraform-cdk-action@v3
         with:
           cdktfVersion: 0.20.4
