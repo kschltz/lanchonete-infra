@@ -7,6 +7,7 @@ import {EksCluster} from "@cdktf/provider-aws/lib/eks-cluster";
 import {IamRole} from "@cdktf/provider-aws/lib/iam-role";
 import {Subnet} from "@cdktf/provider-aws/lib/subnet";
 import {IamRolePolicyAttachment} from "@cdktf/provider-aws/lib/iam-role-policy-attachment";
+import {EcrRepository} from "@cdktf/provider-aws/lib/ecr-repository";
 
 class LanchoneteStack extends TerraformStack {
     constructor(scope: Construct, id: string) {
@@ -19,14 +20,16 @@ class LanchoneteStack extends TerraformStack {
                 },
             },
         ];
-
-        new AwsProvider(this, 'aws-provider', {
+        const cfg = {
             defaultTags: tags,
             accessKey: process.env.AWS_ACCESS_KEY_ID,
             secretKey: process.env.AWS_SECRET_ACCESS_KEY,
             region: process.env.AWS_DEFAULT_REGION,
             profile: process.env.AWS_PROFILE,
-        });
+        }
+
+
+        new AwsProvider(this, 'aws-provider', cfg);
 
         const vpc = new Vpc(this, 'eksVpc', {
             cidrBlock: '10.0.0.0/16'
@@ -77,6 +80,8 @@ class LanchoneteStack extends TerraformStack {
             role: eksRole.name,
             policyArn: 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy'
         });
+
+        new EcrRepository(this, 'eksEcrRepository', {name: "lanchonete-api"});
 
         new EksCluster(this, 'eksCluster', {
             name: 'my-eks-cluster',

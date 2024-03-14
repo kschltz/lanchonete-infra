@@ -5,6 +5,7 @@
     "experimentalDecorators": true,
     "inlineSourceMap": true,
     "inlineSources": true,
+    "types": ["node"],
     "lib": [
       "es2018"
     ],
