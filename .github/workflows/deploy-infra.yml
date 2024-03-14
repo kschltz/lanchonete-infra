@@ -1,0 +1,44 @@
+name: "Apply Stack after PR is Merged"
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: read
+
+jobs:
+  terraform:
+    name: "Terraform CDK Deploy"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Generate module and provider bindings
+        run: npx cdktf-cli get
+
+      - name: Run Terraform CDK
+        uses: hashicorp/terraform-cdk-action@v3
+        with:
+          cdktfVersion: 0.20.4
+          terraformVersion: 1.7.4
+          mode: auto-approve-apply
+          stackName: lanchonete-infra
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
