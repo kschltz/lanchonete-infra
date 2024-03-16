@@ -33,4 +33,13 @@ jobs:
           TF_VAR_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
         run: |
+          terraform get
           terraform apply -auto-approve -input=false
+
+
+      - name: Commit state
+        uses: stefanzweifel/git-auto-commit-action@v5
+        id: auto-commit-action #mandatory for the output to show up in ${{ steps }}
+        with:
+         file_pattern: '*.tf *.backup'
+         commit_message: Save terraform state
