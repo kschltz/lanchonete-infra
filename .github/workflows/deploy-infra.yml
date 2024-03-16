@@ -33,7 +33,7 @@ jobs:
           TF_VAR_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
         run: |
-          terraform get
+          terraform init -backend-false
           terraform apply -auto-approve -input=false
 
       - name: Commit state
