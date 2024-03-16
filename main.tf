@@ -43,7 +43,6 @@ provider "aws" {
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 4.0"
-  id      = "vpc-eks-lanchonete"
   name    = local.name
   cidr    = local.vpc_cidr
 
@@ -65,7 +64,6 @@ module "vpc" {
 
 resource "aws_ecr_repository" "ecr_lanchonete_api" {
   name         = "lanchonete-api"
-  id           = "lanchonete-api-ecr"
   force_delete = true
 }
 
