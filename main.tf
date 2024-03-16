@@ -10,7 +10,7 @@ variable "AWS_SECRET_ACCESS_KEY" {
 
 
 locals {
-  name   = "MBA-FIAP-cluster"
+  name   = "mba-api"
   region = "us-east-1"
 
   vpc_cidr = "10.123.0.0/16"
@@ -43,8 +43,9 @@ provider "aws" {
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 4.0"
-  name    = local.name
-  cidr    = local.vpc_cidr
+
+  name = local.name
+  cidr = local.vpc_cidr
 
   azs             = local.azs
   private_subnets = local.private_subnets
@@ -60,11 +61,6 @@ module "vpc" {
   private_subnet_tags = {
     "kubernetes.io/role/internal-elb" = 1
   }
-}
-
-resource "aws_ecr_repository" "ecr_lanchonete_api" {
-  name         = "lanchonete-api"
-  force_delete = true
 }
 
 module "eks" {
@@ -104,7 +100,7 @@ module "eks" {
       max_size     = 2
       desired_size = 1
 
-      instance_types = ["t3.medium"]
+      instance_types = ["t3.large"]
       capacity_type  = "SPOT"
 
       tags = {
@@ -114,4 +110,10 @@ module "eks" {
   }
 
   tags = local.tags
+}
+
+
+resource "aws_ecr_repository" "ecr_lanchonete_api" {
+  name         = "lanchonete-api"
+  force_delete = true
 }
