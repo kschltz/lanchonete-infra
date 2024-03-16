@@ -3,7 +3,7 @@ name: "destroy stack"
 on: [workflow_dispatch]
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
   issues: read
 
