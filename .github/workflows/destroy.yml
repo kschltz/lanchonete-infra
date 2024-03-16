@@ -9,40 +9,23 @@ permissions:
 
 jobs:
   terraform:
-    name: "Terraform CDK Deploy"
+    name: "Terraform Deploy"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Install Terraform
+        uses: little-core-labs/install-terraform@v2.0.0
         with:
-          node-version: 20
+          # Version of terraform to download
+          version: 1.7.5
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Generate module and provider bindings
-        run: npx cdktf-cli get
-
-      - name: Run Terraform CDK
-        uses: hashicorp/terraform-cdk-action@v3.0.7
-
-        with:
-          cdktfVersion: 0.20.4
-          terraformVersion: 1.7.4
-          mode: plan-only
-          stackName: lanchonete-infra
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Run Terraform CDK
-        uses: hashicorp/terraform-cdk-action@v3
+      - name: Run destroy
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        with:
-          cdktfVersion: 0.20.4
-          terraformVersion: 1.7.4
-          mode: auto-approve-destroy
-          stackName: lanchonete-infra
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+        run: |
+          terraform init
+          terraform destroy -auto-approve
