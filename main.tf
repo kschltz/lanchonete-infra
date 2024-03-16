@@ -8,6 +8,14 @@ variable "AWS_SECRET_ACCESS_KEY" {
   sensitive = true
 }
 
+terraform {
+  backend "s3" {
+    bucket = "mba-fiap-lanchonete-terraform"
+    key    = "mba/lanchonete-api/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
 
 locals {
   name   = "mba-api"
