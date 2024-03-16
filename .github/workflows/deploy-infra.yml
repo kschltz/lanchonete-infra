@@ -19,13 +19,26 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Terraform
-      # You may pin to the exact commit or the version.
-      # uses: little-core-labs/install-terraform@1e577535d279f1999a5abf60337ddc3ff225e79d
+        # You may pin to the exact commit or the version.
+        # uses: little-core-labs/install-terraform@1e577535d279f1999a5abf60337ddc3ff225e79d
         uses: little-core-labs/install-terraform@v2.0.0
         with:
-        # Version of terraform to download
+          # Version of terraform to download
           version: 1.7.5
 
+      - name: TF backend config
+        uses: amannm/terraform-s3-backend-action@v1
+        env:
+          TF_VAR_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          TF_VAR_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        with:
+          account-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          region: "us-east-1"
+          role: "github-actions@kschltz.lanchonete-infra"
+          bucket: "terraform-state"
+          key: "kschltz/lanchonete-infra/terraform.tfstate"
+      - run: |
+          terraform init -backend-config="${{ steps.backend-config.outputs.path }}"
 
       - name: Run apply
         env:
@@ -33,7 +46,6 @@ jobs:
           TF_VAR_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
         run: |
-          terraform init -backend=false
           terraform apply -auto-approve -input=false
 
       - name: Commit state
